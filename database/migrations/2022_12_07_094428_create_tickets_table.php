@@ -15,12 +15,13 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->string('ticket_id');
-            $table->string('customer_id');
+            $table->string('ticket_id'); 
+            $table->unsignedBigInteger('customer_id');
+            $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('contact');
             $table->string('detail');
-            $table->string('status');
-            $table->string('is_open');
+            $table->boolean('status')->default(0)->change();
+            $table->boolean('is_open')->default(0)->change();
             $table->string('reply')->nullable();
             $table->string('replied_by')->nullable();
             $table->string('replied_time')->nullable();

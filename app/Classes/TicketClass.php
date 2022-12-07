@@ -1,8 +1,8 @@
 <?php 
 
-namespace App\TicketClass;
+namespace App\Classes;
 
-class Tickets{
+class TicketClass{
     
     protected $response = false;
     public function __construct($response)
