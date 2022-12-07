@@ -18,10 +18,9 @@ return new class extends Migration
             $table->string('ticket_id'); 
             $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('contact');
             $table->string('detail');
-            $table->boolean('status')->default(0)->change();
-            $table->boolean('is_open')->default(0)->change();
+            $table->boolean('status')->default(0);
+            $table->boolean('is_open')->default(0);
             $table->string('reply')->nullable();
             $table->string('replied_by')->nullable();
             $table->string('replied_time')->nullable();

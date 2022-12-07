@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AccountCreate;
+use App\Models\Ticket;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -35,24 +39,38 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
+       try {
+        Log::info(__METHOD__);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:'.User::class,
-            'contact' => 'required|int|max:16',
+            'contact' => 'required|int|min:10',
             'detail' => 'required|string',
             // 'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-
+        $password = Hash::make(Str::random(8));
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make(Str::random(8)),
+            'password' => $password,
+            'contact' => $request->contact,
         ]);
-
         event(new Registered($user));
+        $check = Auth::login($user);
 
-        Auth::login($user);
+        $mailData = [
+            'title' => 'Your Open-Ticket account is created successfully.',
+            'pass' => $password
+        ];
+      
+            
+            // Mail::to($request->email)->send(new AccountCreate($mailData));
+            Ticket::createNewTicket($user->id,  $request->email, $request->detail);
+     
 
         return redirect(RouteServiceProvider::HOME);
+       } catch (\Throwable $th) {
+         Log::info(__METHOD__.' error '.$th->getMessage(). ' e_file '. $th->getFile(). ' e_line '.$th->getLine());
+       }
     }
 }

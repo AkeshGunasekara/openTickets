@@ -1,0 +1,22 @@
+<script>
+</script>
+<template>
+     <table>
+        <tr>
+            <th>Ticket No.</th>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Contact</th>
+            <th>Problem</th>
+            <th>Responsed</th> 
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+     </table>
+</template>
