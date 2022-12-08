@@ -7,13 +7,14 @@ import ClientArea from './ClientArea.vue';
 const user = usePage().props.value.auth.user;
 let isAdmin = false;
 
-if(user.is_admin){
+if (user.is_admin) {
     isAdmin = true;
 }
 
 </script>
 
 <template>
+
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
@@ -21,14 +22,12 @@ if(user.is_admin){
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
         </template>
         
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div  v-if="isAdmin" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <AdminArea ></AdminArea>
-                </div>
-                <div  v-else class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <ClientArea></ClientArea>
-                </div>
+        <div class=" col-lg-8 pl-5">
+            <div v-if="isAdmin" class="shadow-sm sm:rounded-lg">
+                <AdminArea></AdminArea>
+            </div>
+            <div v-else class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <ClientArea></ClientArea>
             </div>
         </div>
     </AuthenticatedLayout>

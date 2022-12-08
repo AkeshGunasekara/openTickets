@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
@@ -11,9 +15,21 @@ class TicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        try {
+            if(Customer::checkIsAdmin()){
+                $findTickets = Ticket::getTickets($request->page);
+            }else{
+                $findTickets = Ticket::getMyTickets($request->page);
+            }
+            return response()->json([
+                'status' => true,
+                'date' =>  $findTickets
+            ]);
+        } catch (\Throwable $th) {
+            $this->ReturnThrowable($th);
+        }
     }
 
     /**
@@ -34,7 +50,22 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $response = [
+                'status'=> false,
+                'message' => 'Ticket-opening failed. try again later'
+            ]; 
+            $createNew = Ticket::createNewTicket(Auth::user()->id, Auth::user()->email, $request->detail);
+            if($createNew){
+                $response = [
+                    'status'=> true,
+                    'message' => 'New ticket-open successfuly'
+                ];
+            }
+            return response()->json($response);
+        } catch (\Throwable $th) {
+            $this->ReturnThrowable($th);
+        }
     }
 
     /**
@@ -43,9 +74,17 @@ class TicketController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($searching, Request $request)
     {
-        //
+        try {
+            $search = Ticket::searchByKey($searching);
+            return response()->json([
+                'status' => true,
+                'data' => $search
+            ]);
+        } catch (\Throwable $th) {
+            $this->ReturnThrowable($th); 
+        }
     }
 
     /**
@@ -68,7 +107,13 @@ class TicketController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+       try {
+          $type = $request->type;
+          $doUpdate = Ticket::updateTicketById($id, $type, $request);
+          return response()->json($doUpdate);
+        } catch (\Throwable $th) {
+            $this->ReturnThrowable($th); 
+        }
     }
 
     /**
@@ -80,5 +125,20 @@ class TicketController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    public function ReturnThrowable($th){
+        Log::info(__METHOD__ . ' e_code' . $th->getCode() . 
+            '  e_message' . $th->getMessage()
+            . ' e_line' . $th->getLine()
+            . ' e_file' . $th->getFile());
+            return response()->json([
+                'status' => false,
+                'error_code' => 'fail',
+                'e_code' => $th->getCode(),
+                'e_message' => $th->getMessage(),
+                'message' => 'Data loading failed. please try again later',
+            ]);
     }
 }
