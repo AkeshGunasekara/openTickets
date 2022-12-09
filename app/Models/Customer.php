@@ -40,4 +40,8 @@ class Customer extends User
     public static function getCustomerById($id){
         return self::find($id)->getSimple();
     }
+
+    public static function getCustomerEmail($id){
+        return self::find($id)->email;
+    }
 }

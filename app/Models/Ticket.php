@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\QueueSendingTicketReplyEmail;
 use DB;
 use App\Jobs\QueueSendTicketEmails;
 use App\Mail\TicketCreate;
@@ -114,7 +115,19 @@ class Ticket extends Model
 
     public static function searchByKey($searchKey)
     {
-        $finding = self::join('users', 'users.id', 'tickets.customer_id')
+        if(!Customer::checkIsAdmin()){
+            $loginUser =Auth::user()->id;
+            $finding = self::where(['customer_id' => $loginUser])
+            ->get();
+            // $finding = self::where(function ($query) use ($loginUser, $searchKey) {
+            //     return $query->where('customer_id', '=', $loginUser)
+            //           ->orWhere('ticket_id', '=', $searchKey);
+            // })->where(function ($query) use ($loginUser, $searchKey) {
+            //     return $query->where('customer_id', '=', $loginUser)
+            //           ->orWhere('detail', '=', $searchKey);
+            // });
+        }else{
+            $finding = self::join('users', 'users.id', 'tickets.customer_id')
             ->orWhere('tickets.ticket_id', 'like', '%' . $searchKey . '%')
             ->orWhere('tickets.detail', 'like', '%' . $searchKey . '%')
             ->orWhere('users.name', 'like', '%' . $searchKey . '%')
@@ -122,7 +135,7 @@ class Ticket extends Model
             ->orWhere('users.contact', 'like', '%' . $searchKey . '%')
             ->select('users.*', 'tickets.*', 'users.id as user_id', 'tickets.id as tick_id')
             ->get();
-
+        } 
         return self::getTickets(false, $finding);
     }
 
@@ -144,13 +157,21 @@ class Ticket extends Model
                     ];
                     break;
             }
-            $doUpdate = self::where(['id' => $id])->update($updating);
+            $findTicket = self::find($id); 
+            $doUpdate = $findTicket->update($updating);
 
             if ($doUpdate) {
                 $response = [
                     'status' => true,
                     'message' => 'Ticket updated successfully'
                 ];
+                $mailData = [
+                    'title' => 'Your Ticket response',
+                    'ticketId' => $findTicket->ticket_id,
+                    'reply' => $data->reply
+                ];
+                dispatch(new QueueSendingTicketReplyEmail(Customer::getCustomerEmail($findTicket->customer_id), $mailData));
+
             } else {
                 $response = [
                     'status' => false,

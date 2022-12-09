@@ -46,7 +46,7 @@ export default {
 
         }
     },
-    async mounted() { 
+    async mounted() {
     },
 
     methods: {
@@ -79,7 +79,7 @@ export default {
                 });
             }
             if (vm.searching == '') {
-                vm.page =1;
+                vm.page = 1;
                 vm.tickets = [];
                 vm.isSearching = false;
                 vm.getCustomerRevies();
@@ -118,7 +118,7 @@ export default {
                 }).then(function (response) {
                     if (response.data.status) {
                         vm.page = 1;
-                        vm.tickets =[];
+                        vm.tickets = [];
                         vm.getCustomerRevies();
                         $('#exampleModal').modal('hide');
                         notify({
@@ -209,7 +209,8 @@ export default {
                 </div>
             </div>
             <div class="max-w-7xl mx-auto sm:px-4 lg:px-4 space-y-6">
-                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg" v-for="ticket in tickets" :key="ticket.id">
+                <div class="box p-4 sm:p-8 bg-white shadow sm:rounded-lg" v-for="ticket in tickets" :key="ticket.id">
+                    <div v-if="ticket.reply == null" class="ribbon-2">Pending</div> 
                     <div class="row pr-4">
                         <div class="col-lg-11">
                             <h5 class="card-title" :class="ticket.isOpen ? '' : 'textBold'"># {{
@@ -222,7 +223,7 @@ export default {
                             <p class="card-text">{{ ticket.detail }}</p>
 
                         </div>
-                        <div class="col-lg-1">
+                        <div class="col-lg-1 pt-4">
                             <a v-if="ticket.ticketObjId != selectedTicket.id" href="javascript:void(0);"
                                 @click="selectNow(ticket)" class="btn btn-primary">
                                 View
