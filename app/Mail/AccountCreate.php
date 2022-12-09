@@ -13,7 +13,7 @@ class AccountCreate extends Mailable
 {
     use Queueable, SerializesModels;
     
-    protected $mailData;
+    public $mailData;
     /**
      * Create a new message instance.
      *
@@ -23,44 +23,11 @@ class AccountCreate extends Mailable
     {
         $this->mailData = $mailData;
     }
- 
-    /**
-     * Get the message envelope.
-     *
-     * @return \Illuminate\Mail\Mailables\Envelope
-     */
-    public function envelope()
+  
+
+    public function build()
     {
-        return new Envelope(
-            subject: 'Account Create',
-        );
+        return $this->subject('Mail from Open-Tickets')
+                    ->view('emails.createAccount');
     }
-
-    /**
-     * Get the message content definition.
-     *
-     * @return \Illuminate\Mail\Mailables\Content
-     */
-    public function content()
-    {
-        return new Content(
-            view: 'emails.createAccount',
-        );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array
-     */
-    // public function attachments()
-    // {
-    //     return [];
-    // }
-
-    // public function build()
-    // {
-    //     return $this->subject('Mail from Open-Tickets')
-    //                 ->view('emails.createAccount');
-    // }
 }

@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 class TicketCreate extends Mailable
 {
     use Queueable, SerializesModels;
-    protected $mailData;
+    public $mailData;
 
     /**
      * Create a new message instance.
@@ -23,38 +23,10 @@ class TicketCreate extends Mailable
     {
         $this->mailData = $mailData;
     }
-
-    /**
-     * Get the message envelope.
-     *
-     * @return \Illuminate\Mail\Mailables\Envelope
-     */
-    public function envelope()
+ 
+    public function build()
     {
-        return new Envelope(
-            subject: 'Ticket Open',
-        );
-    }
-
-    /**
-     * Get the message content definition.
-     *
-     * @return \Illuminate\Mail\Mailables\Content
-     */
-    public function content()
-    {
-        return new Content(
-            view: 'emails.createTicket',
-        );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array
-     */
-    public function attachments()
-    {
-        return [];
+        return $this->subject('New-Ticket-Open')
+                    ->view('emails.createTicket');
     }
 }

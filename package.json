@@ -19,6 +19,7 @@
         "vite": "^3.0.0"
     },
     "dependencies": {
+        "@kyvg/vue3-notification": "^2.7.0",
         "v3-infinite-loading": "^1.2.2"
     }
 }

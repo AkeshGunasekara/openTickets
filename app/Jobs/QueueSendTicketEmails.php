@@ -2,12 +2,15 @@
 
 namespace App\Jobs;
 
+use App\Mail\TicketCreate;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class QueueSendTicketEmails implements ShouldQueue
 {
@@ -18,9 +21,12 @@ class QueueSendTicketEmails implements ShouldQueue
      *
      * @return void
      */
-    public function __construct()
+    protected $email;
+    protected $mailData;
+    public function __construct($email, $mailData)
     {
-        //
+        $this->email = $email;
+        $this->mailData = $mailData;
     }
 
     /**
@@ -30,6 +36,13 @@ class QueueSendTicketEmails implements ShouldQueue
      */
     public function handle()
     {
-        //
+        try {
+            Mail::to($this->email)->send(new TicketCreate($this->mailData));
+        } catch (\Throwable $th) {
+            Log::info(__METHOD__ . ' e_code' . $th->getCode() .
+                '  e_message' . $th->getMessage()
+                . ' e_line' . $th->getLine()
+                . ' e_file' . $th->getFile());
+        }
     }
 }

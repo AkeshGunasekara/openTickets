@@ -21,11 +21,11 @@ class TicketController extends Controller
             if(Customer::checkIsAdmin()){
                 $findTickets = Ticket::getTickets($request->page);
             }else{
-                $findTickets = Ticket::getMyTickets($request->page);
+                $findTickets = Ticket::getTickets($request->page, false, true);
             }
             return response()->json([
                 'status' => true,
-                'date' =>  $findTickets
+                'data' =>  $findTickets
             ]);
         } catch (\Throwable $th) {
             $this->ReturnThrowable($th);
@@ -55,6 +55,7 @@ class TicketController extends Controller
                 'status'=> false,
                 'message' => 'Ticket-opening failed. try again later'
             ]; 
+           
             $createNew = Ticket::createNewTicket(Auth::user()->id, Auth::user()->email, $request->detail);
             if($createNew){
                 $response = [
@@ -77,7 +78,12 @@ class TicketController extends Controller
     public function show($searching, Request $request)
     {
         try {
-            $search = Ticket::searchByKey($searching);
+            $search = [];
+            if($request->type == 'replace'){
+                $search = Ticket::findTicketById($searching, $request->ticketId);
+            }else{
+                $search = Ticket::searchByKey($searching);
+            }
             return response()->json([
                 'status' => true,
                 'data' => $search

@@ -16,19 +16,19 @@ if (user.is_admin) {
 <template>
 
     <Head title="Dashboard" />
-
+    <notifications />
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
         </template>
         
-        <!-- <div class="pl-5 pr-5"> -->
+        <div class="pl-5 pr-5">
             <div v-if="isAdmin" class="shadow-sm sm:rounded-lg">
                 <AdminArea></AdminArea>
             </div>
-            <div v-else class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div v-else class="shadow-sm sm:rounded-lg">
                 <ClientArea></ClientArea>
             </div>
-        <!-- </div> -->
+        </div>
     </AuthenticatedLayout>
 </template>

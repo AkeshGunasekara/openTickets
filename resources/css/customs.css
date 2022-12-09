@@ -2,3 +2,11 @@
     height: 40%;
     overflow: scroll;
 }
+
+.span{
+    font-size: 0.8rem !important;
+}
+
+.textBold{
+    font-weight: bold;
+}

@@ -12,15 +12,17 @@ const form = useForm({
     email: null,
     contact:null,
     detail:null,
-    // password: '',
-    // password_confirmation: '',
+    password: '',
+    password_confirmation: '',
     terms: false,
 });
 
 const submit = () => {
-    form.post(route('register'), {
+    form.post(route('register')
+    , {
         onFinish: () => form.reset('password', 'password_confirmation'),
-    });
+    }
+    );
 };
 </script>
 
