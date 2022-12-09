@@ -29,6 +29,7 @@ export default {
             errorMsg: "",
             searching: '',
             isSearching: false,
+            formSubmit: false,
             detail: null,
             selectedTicket: {
                 id: null,
@@ -45,55 +46,46 @@ export default {
 
         }
     },
-    async mounted() {
-        this.getCustomerRevies();
+    async mounted() { 
     },
 
     methods: {
         async getCustomerRevies() {
             const vm = this;
+            console.log('call ', vm.page);
             await axios.get(vm.api + "/tickets?page=" + vm.page).then((response) => {
-                vm.tickets = response.data.data;
+                // vm.tickets = response.data.data;
+                vm.tickets.push(...response.data.data);
+                vm.page++;
             }).catch((e) => {
                 console.log('Unauthenticated');
             });
+
         },
 
         async searchTicket() {
             const vm = this;
+
             if (vm.searching.length > 4) {
                 vm.isSearching = true;
                 await axios.get(vm.api + "/tickets/" + vm.searching).then((response) => {
                     vm.tickets = response.data.data;
                 }).catch((e) => {
-                    console.log('Unauthenticated');
+                    notify({
+                        title: "Authorization",
+                        text: "Please try again",
+                        type: 'error'
+                    });
                 });
             }
             if (vm.searching == '') {
+                vm.page =1;
+                vm.tickets = [];
                 vm.isSearching = false;
                 vm.getCustomerRevies();
             }
-
         },
 
-        async loadData(state) {
-            console.log("loading...", state);
-            try {
-                const response = await fetch(
-                    "https://jsonplaceholder.typicode.com/comments?_limit=10&_page=" +
-                    this.page
-                );
-                const json = await response.json();
-                if (json.length < 10) state.complete();
-                else {
-                    this.comments.push(...json);
-                    state.loaded();
-                }
-                this.page++;
-            } catch (error) {
-                state.error();
-            }
-        },
 
         selectNow(selected) {
             const vm = this;
@@ -118,6 +110,7 @@ export default {
             if (vm.detail == null) {
                 vm.errorMsg = "please add your problem";
             } else {
+                vm.formSubmit = true;
                 axios({
                     method: "POST",
                     url: vm.api + "/tickets",
@@ -125,15 +118,25 @@ export default {
                 }).then(function (response) {
                     if (response.data.status) {
                         vm.page = 1;
+                        vm.tickets =[];
                         vm.getCustomerRevies();
+                        $('#exampleModal').modal('hide');
                         notify({
                             title: "Success",
                             text: response.data.message,
                             type: 'success'
                         });
+                        vm.formSubmit = false;
                     }
                 }).catch((e) => {
-                    console.log('Unauthenticated');
+                    vm.formSubmit = false;
+                    // console.log(e);
+                    // console.log('Unauthenticated');
+                    notify({
+                        title: "Authorization",
+                        text: 'Please try again later',
+                        type: 'error'
+                    });
                 });
             }
 
@@ -183,9 +186,11 @@ export default {
                             <InputError class="mt-2" :message="errorMsg" />
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="detail = null;"
-                                data-bs-dismiss="modal">Close</button>
-                            <button class="btn btn-primary" @click="createNewTicket()">Create</button>
+                            <button class="btn btn-secondary" @click="detail = null;" data-bs-dismiss="modal"
+                                :disabled="formSubmit">Close</button>
+                            <button class="btn btn-primary" @click="createNewTicket()" :disabled="formSubmit">
+                                {{ formSubmit ? 'Wait...' : 'Create' }}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -228,21 +233,10 @@ export default {
                         </div>
                     </div>
                 </div>
+                <infinite-loading spinner="spiral" @infinite="getCustomerRevies" />
             </div>
-
         </div>
-        <!-- <div class="col-lg-8 col-sm-6">
-            <div class="scrollDiv">
-                <div class="card" v-for="comment in comments" :key="comment.id">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ comment.email }}</h5>
-                        <p class="card-text">{{ comment.id }}</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                </div>
-            </div>
-            <infinite-loading @infinite="loadData" />
-        </div> -->
+
         <div v-show="toggleForm" class="col-lg-4 col-sm-6">
             <div class="card">
                 <div class="card-body">

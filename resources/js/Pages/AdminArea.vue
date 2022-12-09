@@ -49,13 +49,17 @@ export default {
         }
     },
     async mounted() {
-        this.getCustomerRevies();
+        // this.getCustomerRevies();
+        // this.getTicketById(2, '6OXTQet1KWoj');
     },
     methods: {
         async getCustomerRevies() {
             const vm = this;
+            console.log('call ', vm.page);
             await axios.get(vm.api + "/tickets?page=" + vm.page).then((response) => {
-                vm.tickets = response.data.data;
+                // vm.tickets = response.data.data;
+                vm.tickets.push(...response.data.data);
+                vm.page++;
             }).catch((e) => {
                 console.log('Unauthenticated');
             });
@@ -78,6 +82,8 @@ export default {
                 });
             }
             if (vm.searching == '') {
+                vm.page =1;
+                vm.tickets = [];
                 vm.isSearching = false;
                 vm.getCustomerRevies();
             }
@@ -97,32 +103,13 @@ export default {
                         if (ticket.ticketObjId === vm.selectedTicket.id) {
                             ticket.isOpen = true;
                         }
-                    })
+                    });
                 }
             }).catch((e) => {
                 console.log('Unauthenticated');
             });
         },
-
-        async loadData(state) {
-            console.log("loading...", state);
-            try {
-                const response = await fetch(
-                    "https://jsonplaceholder.typicode.com/comments?_limit=10&_page=" +
-                    this.page
-                );
-                const json = await response.json();
-                if (json.length < 10) state.complete();
-                else {
-                    this.comments.push(...json);
-                    state.loaded();
-                }
-                this.page++;
-            } catch (error) {
-                state.error();
-            }
-        },
-
+ 
         selectNow(selected) {
             const vm = this;
             vm.selectedTicket = {
@@ -154,11 +141,13 @@ export default {
                     data: vm.responseForm
                 }).then(function (response) {
                     if (response.data.status) {
+                        vm.getTicketById(vm.selectedTicket.id, vm.selectedTicket.ticketId);
                         notify({
                             title: "Success",
                             text: response.data.message,
                             type: 'success'
                         });
+                        vm.resetForm();
                     }
                 }).catch((e) => {
                     console.log('Unauthenticated');
@@ -166,11 +155,34 @@ export default {
             }
         },
 
-        async getTicketById(){
+        async getTicketById(objectId, ticketId) {
             const vm = this;
+            await axios.get(vm.api + "/tickets/" + objectId, {
+                params: {
+                    'type': 'replace', 'ticketId': ticketId
+                }
+            }).then((response) => {
+                if (response.data.status) {
+                    var thisTicket = response.data.data[0];
 
-        },  
-        
+                    vm.tickets.find((ticket, index) => {
+                        console.log(ticket);
+                        if (ticket.ticketObjId === objectId) {
+                            vm.tickets.splice(index, 1);
+                            vm.tickets[index] = thisTicket;
+                        }
+                    });
+                }
+            }).catch((e) => {
+                console.log(e);
+                // notify({
+                //     title: "Authorization",
+                //     text: "Please try again",
+                //     type: 'error'
+                // });
+            });
+        },
+
         resetForm() {
             const vm = this;
             vm.toggleForm = false;
@@ -249,23 +261,11 @@ export default {
                             </a>
                         </div>
                     </div>
-
-
                 </div>
+                <infinite-loading @infinite="getCustomerRevies" />
             </div>
         </div>
-        <!-- <div class="col-lg-8 col-sm-6">
-            <div class="scrollDiv">
-                <div class="card" v-for="comment in comments" :key="comment.id">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ comment.email }}</h5>
-                        <p class="card-text">{{ comment.id }}</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                </div>
-            </div>
-            <infinite-loading @infinite="loadData" />
-        </div> -->
+         
         <div v-show="toggleForm" class="col-lg-4 col-sm-6">
             <div class="card">
                 <div class="card-body">

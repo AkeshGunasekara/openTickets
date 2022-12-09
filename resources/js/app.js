@@ -1,6 +1,6 @@
 import './bootstrap';
 import '../css/app.css'; 
-import '../css/customs.css'; 
+import '../css/customs.css';  
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/inertia-vue3';
 import { InertiaProgress } from '@inertiajs/progress';

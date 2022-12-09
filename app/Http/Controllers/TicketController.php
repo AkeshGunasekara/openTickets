@@ -78,7 +78,7 @@ class TicketController extends Controller
     public function show($searching, Request $request)
     {
         try {
-            $search = [];
+            $search = []; 
             if($request->type == 'replace'){
                 $search = Ticket::findTicketById($searching, $request->ticketId);
             }else{
