@@ -182,19 +182,17 @@ export default {
             }).then((response) => {
                 if (response.data.status) {
                     var thisTicket = response.data.data[0];
-                    if (thisTicket.length > 0) {
-                        vm.tickets.find((ticket, index) => {
-                            console.log(ticket);
-                            if (ticket.ticketObjId === objectId) {
-                                vm.tickets.splice(index, 1);
-                                vm.tickets[index] = thisTicket;
-                            }
-                        });
-                    }
+
+                    vm.tickets.find((ticket, index) => { 
+                        if (ticket.ticketObjId == objectId) {
+                            vm.tickets.splice(index, 1);
+                            vm.tickets[index] = thisTicket;
+                        }
+                    });
 
                 }
             }).catch((e) => {
-                console.log(e);
+                // console.log(e);
                 // notify({
                 //     title: "Authorization",
                 //     text: "Please try again",
@@ -356,7 +354,7 @@ export default {
                                     required />
                                 <InputError class="mt-2" :message="errorMsg" />
                                 <PrimaryButton class="mt-3 ml-4" :disabled="replyBtnDisable">
-                                    Reply
+                                    {{ replyBtnDisable ? 'Wait...' : 'Reply' }}
                                 </PrimaryButton>
                             </form>
                         </div>
