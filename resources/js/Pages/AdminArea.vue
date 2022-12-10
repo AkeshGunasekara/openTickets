@@ -29,6 +29,7 @@ export default {
             errorMsg: "",
             searching: '',
             isSearching: false,
+            replyBtnDisable: false,
             responseForm: {
                 reply: null,
                 type: 'reply'
@@ -72,7 +73,15 @@ export default {
             if (vm.searching.length > 4) {
                 vm.isSearching = true;
                 await axios.get(vm.api + "/tickets/" + vm.searching).then((response) => {
-                    vm.tickets = response.data.data;
+                    if (response.data.status) {
+                        vm.tickets = response.data.data;
+                    } else {
+                        notify({
+                            title: "Failed",
+                            text: response.data.message,
+                            type: 'error'
+                        });
+                    }
                 }).catch((e) => {
                     notify({
                         title: "Authorization",
@@ -135,11 +144,13 @@ export default {
             if (vm.responseForm.reply == null) {
                 vm.errorMsg = "please add your reply";
             } else {
+                vm.replyBtnDisable = true;
                 axios({
                     method: "PUT",
                     url: vm.api + "/tickets/" + vm.selectedTicket.id,
                     data: vm.responseForm
                 }).then(function (response) {
+                    vm.replyBtnDisable = false;
                     if (response.data.status) {
                         vm.getTicketById(vm.selectedTicket.id, vm.selectedTicket.ticketId);
                         notify({
@@ -148,8 +159,15 @@ export default {
                             type: 'success'
                         });
                         vm.resetForm();
+                    } else {
+                        notify({
+                            title: "Failed",
+                            text: response.data.message,
+                            type: 'error'
+                        });
                     }
                 }).catch((e) => {
+                    vm.replyBtnDisable = false;
                     console.log('Unauthenticated');
                 });
             }
@@ -230,7 +248,7 @@ export default {
 
             <div class="scrollDiv">
                 <div class="box p-4 sm:p-8 bg-white shadow sm:rounded-lg" v-for="ticket in tickets" :key="ticket.id">
-                    <div v-if="!ticket.isOpen || ticket.reply == null" class="ribbon-2">Pending</div> 
+                    <div v-if="!ticket.isOpen || ticket.reply == null" class="ribbon-2">Pending</div>
                     <div class="row pr-4">
                         <div class="col-lg-11">
 
@@ -269,7 +287,7 @@ export default {
             </div>
         </div>
 
-        <div v-show="toggleForm"  class="col-lg-4 col-sm-6 scrollDiv2 mt-3">
+        <div v-show="toggleForm" class="col-lg-4 col-sm-6 scrollDiv2 mt-3">
             <div class="card">
                 <div class="card-body">
                     <h4># {{ selectedTicket.ticketId }}</h4>
@@ -335,7 +353,7 @@ export default {
                                 <TextAreaInput id="detail" class="mt-1 block w-full" v-model="responseForm.reply"
                                     required />
                                 <InputError class="mt-2" :message="errorMsg" />
-                                <PrimaryButton class="mt-3 ml-4">
+                                <PrimaryButton class="mt-3 ml-4" :disable="replyBtnDisable">
                                     Reply
                                 </PrimaryButton>
                             </form>

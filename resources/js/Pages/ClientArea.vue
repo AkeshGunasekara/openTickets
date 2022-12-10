@@ -69,7 +69,15 @@ export default {
             if (vm.searching.length > 4) {
                 vm.isSearching = true;
                 await axios.get(vm.api + "/tickets/" + vm.searching).then((response) => {
-                    vm.tickets = response.data.data;
+                    if (response.data.status) {
+                        vm.tickets = response.data.data;
+                    } else {
+                        notify({
+                            title: "Failed",
+                            text: response.data.message,
+                            type: 'error'
+                        });
+                    }
                 }).catch((e) => {
                     notify({
                         title: "Authorization",
@@ -127,6 +135,12 @@ export default {
                             type: 'success'
                         });
                         vm.formSubmit = false;
+                    } else {
+                        notify({
+                            title: "Failed",
+                            text: response.data.message,
+                            type: 'error'
+                        });
                     }
                 }).catch((e) => {
                     vm.formSubmit = false;
@@ -210,7 +224,7 @@ export default {
             </div>
             <div class="scrollDiv">
                 <div class="box p-4 sm:p-8 bg-white shadow sm:rounded-lg" v-for="ticket in tickets" :key="ticket.id">
-                    <div v-if="ticket.reply == null" class="ribbon-2">Pending</div> 
+                    <div v-if="ticket.reply == null" class="ribbon-2">Pending</div>
                     <div class="row pr-4">
                         <div class="col-lg-11">
                             <h5 class="card-title" :class="ticket.isOpen ? '' : 'textBold'"># {{
