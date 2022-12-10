@@ -90,10 +90,10 @@ class Ticket extends Model
         $response = [];
         $tickets = $onHand;
         if (!$onHand) {
-            $tickets = self::orderBy('created_at', 'DESC')->paginate($pageNum + 6);
+            $tickets = self::orderBy('is_open', 'ASC')->orderBy('created_at' , 'DESC')->paginate($pageNum + 6);
         }
         if ($myTickets) {
-            $tickets = self::where(['customer_id' => Auth::user()->id])->orderBy('created_at', 'DESC')->paginate($pageNum + 6);
+            $tickets = self::where(['customer_id' => Auth::user()->id])->orderBy('is_open', 'ASC')->orderBy('created_at' , 'DESC')->paginate($pageNum + 6);
         }
         foreach ($tickets as $thisTicket) {
 
