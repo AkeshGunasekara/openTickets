@@ -29,7 +29,7 @@ defineProps({
         </center>
     </div>
     <div class="mt-3 ml-4 text-center text-sm text-gray-500 sm:text-right sm:ml-0">
-        Developed by Akesh.A.A.Gunsekara
+        <!-- Developed by Akesh.A.A.Gunsekara -->
     </div>
      
 </template>

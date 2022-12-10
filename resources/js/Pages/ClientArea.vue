@@ -208,7 +208,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div class="max-w-7xl mx-auto sm:px-4 lg:px-4 space-y-6">
+            <div class="scrollDiv">
                 <div class="box p-4 sm:p-8 bg-white shadow sm:rounded-lg" v-for="ticket in tickets" :key="ticket.id">
                     <div v-if="ticket.reply == null" class="ribbon-2">Pending</div> 
                     <div class="row pr-4">
@@ -236,9 +236,37 @@ export default {
                 </div>
                 <infinite-loading spinner="spiral" @infinite="getCustomerRevies" />
             </div>
+            <!-- <div class="max-w-7xl mx-auto sm:px-4 lg:px-4 space-y-6">
+                <div class="box p-4 sm:p-8 bg-white shadow sm:rounded-lg" v-for="ticket in tickets" :key="ticket.id">
+                    <div v-if="ticket.reply == null" class="ribbon-2">Pending</div> 
+                    <div class="row pr-4">
+                        <div class="col-lg-11">
+                            <h5 class="card-title" :class="ticket.isOpen ? '' : 'textBold'"># {{
+                                    ticket.ticketId
+                            }}
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <span class="span">{{ ticket.created }}</span>
+                            </h5>
+
+                            <p class="card-text">{{ ticket.detail }}</p>
+
+                        </div>
+                        <div class="col-lg-1 pt-4">
+                            <a v-if="ticket.ticketObjId != selectedTicket.id" href="javascript:void(0);"
+                                @click="selectNow(ticket)" class="btn btn-primary">
+                                View
+                            </a>
+                            <a v-else href="javascript:void(0);" @click="resetForm()" class="btn btn-secondary">
+                                Close
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <infinite-loading spinner="spiral" @infinite="getCustomerRevies" />
+            </div> -->
         </div>
 
-        <div v-show="toggleForm" class="col-lg-4 col-sm-6">
+        <div v-show="toggleForm" class="col-lg-4 col-sm-6 scrollDiv2 mt-3">
             <div class="card">
                 <div class="card-body">
                     <h4># {{ selectedTicket.ticketId }}</h4>

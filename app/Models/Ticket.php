@@ -114,19 +114,15 @@ class Ticket extends Model
     }
 
     public static function searchByKey($searchKey)
-    {
+    { 
         if(!Customer::checkIsAdmin()){
             $loginUser =Auth::user()->id;
-            $finding = self::where(['customer_id' => $loginUser])
-            ->get();
-            // $finding = self::where(function ($query) use ($loginUser, $searchKey) {
-            //     return $query->where('customer_id', '=', $loginUser)
-            //           ->orWhere('ticket_id', '=', $searchKey);
-            // })->where(function ($query) use ($loginUser, $searchKey) {
-            //     return $query->where('customer_id', '=', $loginUser)
-            //           ->orWhere('detail', '=', $searchKey);
-            // });
-        }else{
+            $finding = self::where('tickets.customer_id', $loginUser)
+            ->where(function($q) use ($searchKey) {
+                $q->orWhere('tickets.ticket_id', 'like', '%' . $searchKey . '%')
+                ->orWhere('tickets.detail', 'like', '%' . $searchKey . '%');
+            })->get(); 
+        }else{ 
             $finding = self::join('users', 'users.id', 'tickets.customer_id')
             ->orWhere('tickets.ticket_id', 'like', '%' . $searchKey . '%')
             ->orWhere('tickets.detail', 'like', '%' . $searchKey . '%')

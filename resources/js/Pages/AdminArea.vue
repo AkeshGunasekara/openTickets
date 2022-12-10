@@ -228,8 +228,7 @@ export default {
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto sm:px-4 lg:px-4 space-y-6">
-
+            <div class="scrollDiv">
                 <div class="box p-4 sm:p-8 bg-white shadow sm:rounded-lg" v-for="ticket in tickets" :key="ticket.id">
                     <div v-if="!ticket.isOpen || ticket.reply == null" class="ribbon-2">Pending</div> 
                     <div class="row pr-4">
@@ -270,7 +269,7 @@ export default {
             </div>
         </div>
 
-        <div v-show="toggleForm" class="col-lg-4 col-sm-6">
+        <div v-show="toggleForm"  class="col-lg-4 col-sm-6 scrollDiv2 mt-3">
             <div class="card">
                 <div class="card-body">
                     <h4># {{ selectedTicket.ticketId }}</h4>

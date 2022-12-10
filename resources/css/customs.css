@@ -42,8 +42,15 @@
 }
 
 .scrollDiv{
-    height: 40%;
+    height: 22rem;
     overflow: scroll;
+    background-color: azure;
+}
+
+.scrollDiv2{
+  height: 30rem;
+  overflow: scroll;
+  background-color: azure; 
 }
 
 .span{

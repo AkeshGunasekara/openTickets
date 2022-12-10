@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -41,14 +42,22 @@ class RegisteredUserController extends Controller
     public function store(Request $request)
     {
        try {
-        Log::info(__METHOD__); 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:'.User::class,
-            'contact' => 'required|string|min:10',
-            // 'detail' => 'required|string',
-            // // 'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        Log::info(__METHOD__);
+        
+        $validate = Validator::make($request->all(), [
+            'name' => 'required|min:5',
+            'email' => 'required|email|max:255|unique:'.User::class,
+            'contact' => 'required|min:10',
+            'detail' => 'required',
+        ],[
+            'contact.required' => 'Contact number is required',
+            'contact.min' => 'Contact must have minimum 10 digits',
         ]);
+         
+        if($validate->fails()){
+            return back()->withErrors($validate->errors())->withInput();
+        }
+
         $password = Str::random(8);
          
         $user =User::create([

@@ -10,8 +10,8 @@ import TextAreaInput from '@/Components/TextAreaInput.vue';
 const form = useForm({
     name: null,
     email: null,
-    contact:null,
-    detail:null,
+    contact: null,
+    detail: null,
     password: '',
     password_confirmation: '',
     terms: false,
@@ -19,30 +19,32 @@ const form = useForm({
 
 const submit = () => {
     form.post(route('register')
-    , {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    }
+        , {
+            onFinish: () => form.reset('password', 'password_confirmation'),
+        }
     );
 };
+
+const onlyNumber = ($event) => {
+   //console.log($event.keyCode); //keyCodes value
+   let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+   if ((keyCode < 48 || keyCode > 57) && keyCode !== 46) { // 46 is dot
+      $event.preventDefault();
+   }
+}
 </script>
 
 <template>
     <GuestLayout>
+
         <Head title="Register" />
 
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="name" value="Name" />
 
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
+                <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required autofocus
+                    autocomplete="name" />
 
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
@@ -50,14 +52,8 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel for="email" value="Email" />
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
+                <TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" required
+                    autocomplete="username" />
 
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
@@ -65,13 +61,7 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel for="phone" value="Phone" />
 
-                <TextInput
-                    id="phone"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.contact"
-                    required 
-                />
+                <TextInput id="phone" type="text" @keypress="onlyNumber" class="mt-1 block w-full" v-model="form.contact" required />
 
                 <InputError class="mt-2" :message="form.errors.contact" />
             </div>
@@ -79,22 +69,15 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel for="detail" value="Problem Description" />
 
-                <TextAreaInput
-                    id="detail"
-                    class="mt-1 block w-full"
-                    v-model="form.detail"
-                    required 
-                />
+                <TextAreaInput id="detail" class="mt-1 block w-full" v-model="form.detail" required />
 
                 <InputError class="mt-2" :message="form.errors.detail" />
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Already registered?
+                <Link :href="route('login')"
+                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Already registered?
                 </Link>
 
                 <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
