@@ -65,7 +65,6 @@ export default {
 
         async searchTicket() {
             const vm = this;
-
             if (vm.searching.length > 4) {
                 vm.isSearching = true;
                 await axios.get(vm.api + "/tickets/" + vm.searching).then((response) => {
