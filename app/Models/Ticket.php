@@ -59,7 +59,7 @@ class Ticket extends Model
             ];
 
             $create = Ticket::create($ticket);
-            if ($create) {
+            if ($create > 0) {
                 $mailData = [
                     'title' => 'Your Open-Ticket is created successfully.',
                     'ticketId' => $ticketId

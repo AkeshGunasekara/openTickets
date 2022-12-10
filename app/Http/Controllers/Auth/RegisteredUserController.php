@@ -72,7 +72,8 @@ class RegisteredUserController extends Controller
 
         $mailData = [
             'title' => 'Your Open-Ticket account is created successfully.',
-            'pass' => $password
+            'email' => $request->email,
+            'pass' => $password,
         ]; 
         dispatch(new QueueSendAccountCreateEmail($request->email, $mailData));
         Ticket::createNewTicket($user->id,  $request->email, $request->detail);
